@@ -13,7 +13,7 @@ class _Some{
 		return (this._v.constructor.name==='_Some' || this._v.constructor.name==='None') ?
 			this._v : (function(){ throw new Error('Type Error: flatten can only apply Some(Option)') }());
 	}
-	map(f) { return Some(f(this,_v)) }
+	map(f) { return Some(f(this._v)) }
 	foreach(f) { return Some(f(this._v)) }
 	orElse(v){ return false }
 	getOrElse(v){ return this._v }

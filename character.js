@@ -62,21 +62,35 @@ class Character {
 		console.log(`${this.name}:HP[${beHp}] -> [${this.stats.hp}]\t// damage:${damageC} (atk:${damage} * d:${this.stats.def} * b:${this.state.barrierRate} * cd:${dealer.stats.critDmg})`);
 	}
 
-	debuff(debuff){ 
-		if(debuff.effTurn === 0) return;
+	debuff(debuff,marks,throughReflect){ 
+		//TODO お互い反射持ってた場合の挙動不明
+		if(!throughReflect && this.hasReflect()) debuff.trg = debuff.parent;
+		if(!checkImmunity(marks,debuff.trg)) return;
+		if(debuff.timing === Buff.timing.init){
+			debuff.fire(debuff.trg);	
+			return;
+		}
 		const sameDebuff = Some(this.state.debuff.findIndex(v => v.id === debuff.parent.id && v.name === debuff.name));
 		sameDebuff.foreach(v => this.state.debuff.splice(v,1));
 		this.state.debuff.push(debuff);
 	}
 
-	buff(buff){ 
-		if(buff.effTurn === 0) return;
+	buff(buff,throughSeal){ 
+		if(throughSeal || !this.canBuff()) return;
+		if(debuff.timing === Buff.timing.init){
+			buff.fire(debuff.trg);	
+			return;
+		}
 		const sameBuff = Some(this.state.buff.findIndex(v => v.id === buff.parent.id && v.name === buff.name));
 		sameBuff.foreach(v => this.state.buff.splice(v,1));
 		this.state.buff.push(buff);
 	}
 
+	hasReflect(){ return this.buff.some(b => b.effect === Buff.mark.reflect) }
+	canBuff(){ return !this.buff.some(b => b.effect === Buff.mark.seal ||  b.effect === Buff.mark.allImmunity) }
 }
+
+const checkImmunity = (marks,trg) => marks.some(m => trg.buff.map(b => b.effect).includes(m));
 
 const fireBuff = (self,one,timing) => self.state.buff
 									.filter(b => b.timing.includes(timing))

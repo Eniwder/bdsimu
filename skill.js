@@ -39,12 +39,21 @@ Skill.invalidation = (level,timing,effTurn) => {
 Skill.sealBuff = (timing,effTurn) => {
 	const name = 'バフ封印';
 	const effect = (self,trg) => {
-		const sealEff = 'sealing mark';
-		const debuff = new Buff(name,Buff.timing.init,sealEff,effTurn,self);
+		const debuff = new Buff(name,Buff.timing.init,Buff.mark.seal,effTurn,self);
 		trg.debuff(debuff);
 	}
 	return new Skill(name,timing,effect,effTurn);
 } 
+
+Skill.charm = (effTurn) => {
+	const name = '誘惑';
+	const effect = (self,trg) => {
+		const debuff = new Buff(name,Buff.timing.beAtk,Buff.mark.charm,effTurn,self);
+		trg.debuff(debuff);
+	}
+	return new Skill(name,Skill.timing.afAtk,effect,effTurn);
+}
+
 Skill.additionalAtk = (name,effect) => new Skill(name,Skill.timing.afAtk,effect,0);
 
 Skill.threatBlow = (maxHpRate) => {
@@ -70,6 +79,27 @@ Skill.absorb = (level,healRate,defRate) => {
 		self.buff(buff);
 	}
 	return Skill.passive(name,effect);
+}
+
+Skill.debuffImmunity = () => {
+	const name = `デバフ免疫(永続)`;
+	const effect = (self,trg) => {
+		return Skill.passive(name,Buff.mark.debuffImmunity);
+	}
+}
+
+Skill.allImmunity = () => {
+	const name = `永続全免疫`;
+	const effect = (self,trg) => {
+		return Skill.passive(name,Buff.mark.allImmunity);
+	}
+}
+
+Skill.disAtkImmunity = () => {
+	const name = `攻撃妨害免疫`;
+	const effect = (self,trg) => {
+		return Skill.passive(name,Buff.mark.allImmunity);
+	}
 }
 
 const calc = (base,rate) => parseInt( (base * rate + 99) / 100 );
