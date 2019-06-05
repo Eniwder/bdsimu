@@ -77,8 +77,8 @@ class Character {
 
 	buff(buff,throughSeal){ 
 		if(throughSeal || !this.canBuff()) return;
-		if(debuff.timing === Buff.timing.init){
-			buff.fire(debuff.trg);	
+		if(buff.timing === Buff.timing.init){
+			buff.fire(buff.trg);	
 			return;
 		}
 		const sameBuff = Some(this.state.buff.findIndex(v => v.id === buff.parent.id && v.name === buff.name));
@@ -86,8 +86,8 @@ class Character {
 		this.state.buff.push(buff);
 	}
 
-	hasReflect(){ return this.buff.some(b => b.effect === Buff.mark.reflect) }
-	canBuff(){ return !this.buff.some(b => b.effect === Buff.mark.seal ||  b.effect === Buff.mark.allImmunity) }
+	hasReflect(){ return this.state.buff.some(b => b.effect === Buff.mark.reflect) }
+	canBuff(){ return !this.state.buff.some(b => b.effect === Buff.mark.seal ||  b.effect === Buff.mark.allImmunity) }
 }
 
 const checkImmunity = (marks,trg) => marks.some(m => trg.buff.map(b => b.effect).includes(m));
